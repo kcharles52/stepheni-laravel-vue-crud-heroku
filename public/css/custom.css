@@ -1,0 +1,114 @@
+html, body {
+    background-color: #fff;
+    font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #222;
+    font-weight: 200;
+    height: 100vh;
+    margin: 0;
+}
+
+a, ul, li, p, h1, h2, h3, h4, h5, h6 {
+  font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.full-height {
+    height: 100vh;
+}
+
+.flex-center {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+
+.position-ref {
+    position: relative;
+}
+
+.top-right {
+    position: absolute;
+    right: 10px;
+    top: 18px;
+}
+
+.content {
+    text-align: center;
+}
+
+.title {
+    font-size: 84px;
+}
+
+.links > a {
+    color: #636b6f;
+    padding: 0 25px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .1rem;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+.m-b-md {
+    margin-bottom: 30px;
+}
+
+.application-title {
+  font-size: 245%;
+  text-decoration: none;
+  color: #11998e;
+  font-weight: 100;
+}
+
+.application-title:hover {
+  color: #56ab2f;
+}
+
+nav {
+  border-bottom: 1px solid lightgrey;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+
+nav .row .columns{
+  margin-top: 5px;
+}
+
+nav ul {
+  margin-top: 4%;
+  float: right;
+}
+
+nav ul li {
+  display: inline-flex;
+  list-style: none;
+  margin: auto 15px;
+}
+
+nav ul li a .material-icons {
+  vertical-align: bottom;
+}
+nav ul li a {
+  color: black;
+  font-size: 110%;
+  text-decoration: none;
+}
+
+nav ul li a:hover {
+  color: #56ab2f;
+}
+
+.app_description {
+  margin: 150px 0;
+}
+
+.app_description .app_title .material-icons {
+  font-size: 95%;
+}
+
+.app_description .app_title {
+  color: #11998e;
+  font-size: 155%;
+}
+.app_description h3 {
+  text-align: left;
+}
