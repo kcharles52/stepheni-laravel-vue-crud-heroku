@@ -98,7 +98,7 @@ nav ul li a:hover {
 }
 
 .app_description {
-  margin: 150px 0;
+  margin: 80px 0;
 }
 
 .app_description .app_title .material-icons {
@@ -111,4 +111,7 @@ nav ul li a:hover {
 }
 .app_description h3 {
   text-align: left;
+}
+.swal-button {
+  padding: 1px 24px !important;
 }

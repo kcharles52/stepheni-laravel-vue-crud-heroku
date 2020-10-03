@@ -51,7 +51,7 @@ class LoginController extends Controller
      *
      * @return JSON
      */
-    public function login(Request $Request)
+    public function login(Request $request)
     {
       $validator = Validator::make($request->all(), [
         'email' => ['email', 'required'],

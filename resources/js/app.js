@@ -7,9 +7,8 @@
 window.Vue = require('vue');
 
 import VueRouter from 'vue-router';
-import Vuex from 'vuex';
 
-import Routes from './routes/index.js';
+import Routes from './routes/index';
 // Engage VueJs Plugins....
 Vue.use(Vuex);
 Vue.use(VueRouter);
@@ -25,8 +24,9 @@ const Router = new VueRouter({
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 Vue.component('App', require('./App.vue').default);
+Vue.prototype.$baseUrl = 'http://localhost:8000/api/v1/';
 
 const app = new Vue({
     el: '#app',
-    router: Router
+    router: Router,
 });

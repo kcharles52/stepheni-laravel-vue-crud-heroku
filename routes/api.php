@@ -15,11 +15,11 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Authentication Routes...
-Route::post('/api/v1/login', 'Auth\LoginController@login');
-Route::get('/api/v1/logout', 'Auth\LoginController@logout');
+Route::post('/v1/login', 'Auth\LoginController@login');
+Route::get('/v1/logout', 'Auth\LoginController@logout');
 
 // Registration Routes...
-Route::post('/api/v1/register', 'Auth\RegisterController@register');
+Route::post('/v1/register', 'Auth\RegisterController@create');
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
