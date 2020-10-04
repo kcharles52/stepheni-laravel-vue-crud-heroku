@@ -6,13 +6,17 @@
 
 window.Vue = require('vue');
 
+// Imports....
 import VueRouter from 'vue-router';
+import CKEditor from 'ckeditor4-vue';
 
 import Routes from './routes/index';
-// Engage VueJs Plugins....
-Vue.use(Vuex);
-Vue.use(VueRouter);
 
+// Engage VueJs Plugins....
+Vue.use(VueRouter);
+Vue.use(CKEditor);
+
+// Router Configurations....
 const Router = new VueRouter({
   mode: 'hash',
   routes: Routes
@@ -26,6 +30,7 @@ const Router = new VueRouter({
 Vue.component('App', require('./App.vue').default);
 Vue.prototype.$baseUrl = 'http://localhost:8000/api/v1/';
 
+// Application Core...
 const app = new Vue({
     el: '#app',
     router: Router,

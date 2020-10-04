@@ -53,11 +53,13 @@ class LoginController extends Controller
      */
     public function login(Request $request)
     {
+      // Do Some Validation....
       $validator = Validator::make($request->all(), [
         'email' => ['email', 'required'],
         'password' => ['string', 'required']
       ]);
       $Response = array();
+
       // check if the validator fails....
       if ($validator->fails()) {
         $Response['data'] = [];
@@ -77,7 +79,7 @@ class LoginController extends Controller
       if (Auth::attempt(['email' =>$emailAddress, 'password' => $password])) {
         $user = User::where('email', $emailAddress)->first();
         $Response['data'] = $user;
-        $Response['token'] = Auth::user()->createToken('authentication');
+        $Response['token'] = Auth::user()->createToken('authentication')->accessToken;
         $Response['status'] = 200;
         $Response['errors'] = '';
         $Response['message'] = 'Login Successfull.';
@@ -95,7 +97,9 @@ class LoginController extends Controller
       $Response['token'] = [];
       $Response['status'] = 401;
       $Response['errors'] = array(
-        'email-password' => 'Failed To Login. Please, Check The Email Address Or Password And Try Again.'
+        'Email Password' => [
+            'Failed To Login. Please, Check The Email Address Or Password And Try Again.'
+          ]
       ); //This was an array of errors in the first conditional... don't reinvent the wheel....
 
       // send back a response...

@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\ForumModel;
+use App\Forum as ForumModel;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -11,8 +12,12 @@ class ForumsController extends Controller
   public function fetchForums(Request $Request)
   {
     $Response = array();
-    $forums = ForumModel::orderBy('id', 'desc')->paginate(10);
-
+    $forums = ForumModel::orderBy('id', 'desc')->get();
+    $forums = collect($forums)->map(function ($el) {
+      $el->user = $el->user;
+      $el->humanTime = $el->created_at->diffForHumans();
+      return $el;
+    });
     // check if the forums are not empty,,,
     if (count($forums) > 0) {
       $Response['status'] = 200;
@@ -37,7 +42,7 @@ class ForumsController extends Controller
     // check if validator fails...
     if ($validator->fails()) {
       $Response['data'] = [];
-      $Response['status'] = 400,
+      $Response['status'] = 400;
       $Response['errors'] = $validator->errors();
       $Response['message'] = 'Some Errors Occured. Please, Try Again Later.';
 
@@ -53,7 +58,7 @@ class ForumsController extends Controller
 
     // Let's cook some forums...
     try {
-      $Forum = ForumsController::([
+      $Forum = ForumModel::create([
         'title' => $title,
         'likes' => $likes,
         'content' => $content,
@@ -63,6 +68,7 @@ class ForumsController extends Controller
 
       // send back some data...
       $Response['data'] = $Forum;
+      $Response['data']['humanTime'] = $Forum->created_at->diffForHumans();
       $Response['status'] = 201;
       $Response['errors'] = '';
       $Response['message'] = 'Your Forum Has Been Created Successfully.';
@@ -126,9 +132,9 @@ class ForumsController extends Controller
     ]);
 
     // check for errors and send back a 400 HTTP Header...
-    if ($validator->errors()) {
-      $Response['data'] = []
-      $Response['status'] = 400,
+    if ($validator->fails()) {
+      $Response['data'] = [];
+      $Response['status'] = 400;
       $Response['errors'] = $validator->errors();
       $Response['message'] = 'Some Errors Occured. Please, Try Again Later.';
 
@@ -138,7 +144,7 @@ class ForumsController extends Controller
     try {
       // Check if the forum is valid...
       $forumId = stripcslashes(strip_tags((Integer) $forumId));
-      $Forum = ForumsController::where('id', $forumId)->where('user_id', $Request->user()->id)->first();
+      $Forum = ForumModel::where('id', $forumId)->where('user_id', $Request->user()->id)->first();
       if (empty($Forum)) {
         return response()->json(array(), 204);
       }
@@ -213,7 +219,7 @@ class ForumsController extends Controller
         return response()->json([], 204);
       }
 
-      $forum->likes = (Intger) $forum->likes + 1;
+      $forum->likes = (Integer) $forum->likes + 1;
       $forum->save();
 
       $Response['data'] = $forum;

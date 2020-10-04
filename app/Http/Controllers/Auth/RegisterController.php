@@ -75,6 +75,7 @@ class RegisterController extends Controller
           $user = User::create([
             'name' => $request->input('name'),
             'email' => $request->input('email'),
+            'email_verified_at' => date('Y-m-d H:i:s'),
             'password' => Hash::make($request->input('password')),
           ]);
 
@@ -92,7 +93,6 @@ class RegisterController extends Controller
           $Response['data'] = [];
           $Response['status'] = 500;
           $Response['errors'] = array(
-            'title' => 'Sorry, An Unexpected Error Occurred And Your Request Could Not Be Completed.',
             'message' => $e->getMessage()
           );
           $Response['token'] = '';
