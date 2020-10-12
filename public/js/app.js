@@ -2039,6 +2039,53 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2048,11 +2095,17 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       editorConfig: {},
       forum: {
         id: null,
+        user: {},
         title: '',
-        content: ''
+        content: '',
+        likes: 0,
+        comments: 0,
+        timestamp: ''
       },
       type: 'create',
       forums: [],
+      comment: '',
+      user_id: '',
       comments: [],
       accessToken: ''
     };
@@ -2072,6 +2125,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               return _this.fetchForums();
 
             case 2:
+              _this.user_id = parseInt(localStorage.getItem('user-id'));
+
+            case 3:
             case "end":
               return _context.stop();
           }
@@ -2308,39 +2364,84 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }, _callee4, null, [[0, 9]]);
       }))();
     },
-    editForum: function editForum(forumToUpdate) {
+    fetchAndAddComments: function fetchAndAddComments(forumComment) {
       var _this5 = this;
 
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee5() {
+        var forumAndComment;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee5$(_context5) {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
-                _this5.type = 'edit';
-                _this5.forum.id = forumToUpdate.id;
-                _this5.forum.title = forumToUpdate.title;
-                _this5.forum.content = forumToUpdate.content;
+                _context5.prev = 0;
+                _context5.next = 3;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get(_this5.$baseUrl + 'forum/comments/' + forumComment.id, {
+                  headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + _this5.accessToken,
+                    'Cache-Control': 'no-cache'
+                  }
+                });
 
-              case 4:
+              case 3:
+                forumAndComment = _context5.sent;
+
+                if (!(forumAndComment.status == 200)) {
+                  _context5.next = 16;
+                  break;
+                }
+
+                _this5.type = 'comments';
+                _this5.forum.id = forumAndComment.data.data.id;
+                _this5.forum.title = forumAndComment.data.data.title;
+                _this5.forum.content = forumAndComment.data.data.content;
+                _this5.forum.likes = forumAndComment.data.data.likes;
+                _this5.forum.comments = forumAndComment.data.data.comments;
+                _this5.forum.timestamp = forumAndComment.data.timestamp;
+                _this5.forum.user = forumAndComment.data.data.user;
+                _context5.next = 15;
+                return _this5.fetchComments(forumComment.id);
+
+              case 15:
+                return _context5.abrupt("return");
+
+              case 16:
+                _context5.next = 28;
+                break;
+
+              case 18:
+                _context5.prev = 18;
+                _context5.t0 = _context5["catch"](0);
+                _this5.type = 'create';
+                _this5.forum.id = '';
+                _this5.forum.title = '';
+                _this5.forum.content = '';
+                _this5.forum.likes = '';
+                _this5.forum.comments = '';
+                _this5.forum.timestamp = '';
+                return _context5.abrupt("return");
+
+              case 28:
               case "end":
                 return _context5.stop();
             }
           }
-        }, _callee5);
+        }, _callee5, null, [[0, 18]]);
       }))();
     },
-    like: function like(forumId) {
+    fetchComments: function fetchComments(forumId) {
       var _this6 = this;
 
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee6() {
-        var liked;
+        var comments;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee6$(_context6) {
           while (1) {
             switch (_context6.prev = _context6.next) {
               case 0:
                 _context6.prev = 0;
                 _context6.next = 3;
-                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get(_this6.$baseUrl + 'forum/like/' + forumId, {
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get(_this6.$baseUrl + 'comments/' + forumId, {
                   headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
@@ -2350,14 +2451,154 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 });
 
               case 3:
-                liked = _context6.sent;
+                comments = _context6.sent;
 
-                if (!(liked.status == 200)) {
-                  _context6.next = 8;
+                if (!(comments.status == 200)) {
+                  _context6.next = 7;
                   break;
                 }
 
-                _this6.forums = _this6.forums.map(function (el) {
+                _this6.comments = comments.data.comments;
+                return _context6.abrupt("return");
+
+              case 7:
+                _this6.comments = [];
+                return _context6.abrupt("return");
+
+              case 11:
+                _context6.prev = 11;
+                _context6.t0 = _context6["catch"](0);
+                console.log(_context6.t0);
+                _this6.comments = [];
+                return _context6.abrupt("return");
+
+              case 16:
+              case "end":
+                return _context6.stop();
+            }
+          }
+        }, _callee6, null, [[0, 11]]);
+      }))();
+    },
+    editForum: function editForum(forumToUpdate) {
+      var _this7 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee7() {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee7$(_context7) {
+          while (1) {
+            switch (_context7.prev = _context7.next) {
+              case 0:
+                _this7.type = 'edit';
+                _this7.forum.id = forumToUpdate.id;
+                _this7.forum.title = forumToUpdate.title;
+                _this7.forum.content = forumToUpdate.content;
+
+              case 4:
+              case "end":
+                return _context7.stop();
+            }
+          }
+        }, _callee7);
+      }))();
+    },
+    addComment: function addComment() {
+      var _this8 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee8() {
+        var comment, errorData, error;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee8$(_context8) {
+          while (1) {
+            switch (_context8.prev = _context8.next) {
+              case 0:
+                _context8.prev = 0;
+                _context8.next = 3;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post(_this8.$baseUrl + 'comment/' + _this8.forum.id, {
+                  comment: _this8.comment
+                }, {
+                  headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + _this8.accessToken,
+                    'Cache-Control': 'no-cache'
+                  }
+                });
+
+              case 3:
+                comment = _context8.sent;
+
+                if (!(comment.status == 201)) {
+                  _context8.next = 9;
+                  break;
+                }
+
+                sweetalert__WEBPACK_IMPORTED_MODULE_2___default()('Success', 'Your Comment Has Been Saved Successfully.', 'success');
+
+                _this8.comments.unshift(comment.data.data);
+
+                _this8.forum.comments += 1;
+                return _context8.abrupt("return");
+
+              case 9:
+                sweetalert__WEBPACK_IMPORTED_MODULE_2___default()('Operation Failed', 'Oops, An Unexpected Error Occurred And Your Comment Could Not Be Saved.', 'error');
+                return _context8.abrupt("return");
+
+              case 13:
+                _context8.prev = 13;
+                _context8.t0 = _context8["catch"](0);
+                errorData = _context8.t0.response.data;
+
+                if (!(errorData.status == 400)) {
+                  _context8.next = 19;
+                  break;
+                }
+
+                for (error in errorData.errors) {
+                  sweetalert__WEBPACK_IMPORTED_MODULE_2___default()("".concat(error, " Error: "), errorData.errors[error][0], 'error');
+                }
+
+                return _context8.abrupt("return");
+
+              case 19:
+                sweetalert__WEBPACK_IMPORTED_MODULE_2___default()('Operation Failed', errorData.message, 'error');
+                return _context8.abrupt("return");
+
+              case 21:
+              case "end":
+                return _context8.stop();
+            }
+          }
+        }, _callee8, null, [[0, 13]]);
+      }))();
+    },
+    like: function like(forumId) {
+      var _this9 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee9() {
+        var liked;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee9$(_context9) {
+          while (1) {
+            switch (_context9.prev = _context9.next) {
+              case 0:
+                _context9.prev = 0;
+                _context9.next = 3;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get(_this9.$baseUrl + 'forum/like/' + forumId, {
+                  headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + _this9.accessToken,
+                    'Cache-Control': 'no-cache'
+                  }
+                });
+
+              case 3:
+                liked = _context9.sent;
+
+                if (!(liked.status == 200)) {
+                  _context9.next = 8;
+                  break;
+                }
+
+                _this9.forums = _this9.forums.map(function (el) {
                   if (parseInt(el.id) == parseInt(forumId)) {
                     el.likes += 1;
                   }
@@ -2367,48 +2608,113 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 sweetalert__WEBPACK_IMPORTED_MODULE_2___default()({
                   icon: 'success'
                 });
-                return _context6.abrupt("return");
+                return _context9.abrupt("return");
 
               case 8:
-                _context6.next = 15;
+                _context9.next = 14;
                 break;
 
               case 10:
-                _context6.prev = 10;
-                _context6.t0 = _context6["catch"](0);
-                console.log(_context6.t0);
-                _this6.forums = [];
-                return _context6.abrupt("return");
+                _context9.prev = 10;
+                _context9.t0 = _context9["catch"](0);
+                _this9.forums = [];
+                return _context9.abrupt("return");
 
-              case 15:
+              case 14:
               case "end":
-                return _context6.stop();
+                return _context9.stop();
             }
           }
-        }, _callee6, null, [[0, 10]]);
+        }, _callee9, null, [[0, 10]]);
+      }))();
+    },
+    deleteForum: function deleteForum(forumId) {
+      var _this10 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee10() {
+        var deletedForum, errorData, error;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee10$(_context10) {
+          while (1) {
+            switch (_context10.prev = _context10.next) {
+              case 0:
+                _context10.prev = 0;
+                _context10.next = 3;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a["delete"](_this10.$baseUrl + 'forum/delete/' + forumId, {
+                  headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + _this10.accessToken,
+                    'Cache-Control': 'no-cache'
+                  }
+                });
+
+              case 3:
+                deletedForum = _context10.sent;
+
+                if (!(deletedForum.status == 200)) {
+                  _context10.next = 8;
+                  break;
+                }
+
+                sweetalert__WEBPACK_IMPORTED_MODULE_2___default()('success', 'The Selected Forum Has Been Deleted Successfully!', 'success');
+                _this10.forums = _this10.forums.filter(function (el) {
+                  if (el.id == forumId) return false;
+                });
+                return _context10.abrupt("return");
+
+              case 8:
+                sweetalert__WEBPACK_IMPORTED_MODULE_2___default()('Operation Failed', 'The Selected Forum Could Not Be Deleted Successfully. Please, Try Again Later!', 'error');
+                return _context10.abrupt("return");
+
+              case 12:
+                _context10.prev = 12;
+                _context10.t0 = _context10["catch"](0);
+                errorData = _context10.t0.response.data;
+
+                if (!(errorData.status == 400)) {
+                  _context10.next = 18;
+                  break;
+                }
+
+                for (error in errorData.errors) {
+                  sweetalert__WEBPACK_IMPORTED_MODULE_2___default()("".concat(error, " Error: "), errorData.errors[error][0], 'error');
+                }
+
+                return _context10.abrupt("return");
+
+              case 18:
+                sweetalert__WEBPACK_IMPORTED_MODULE_2___default()('Operation Failed', errorData.message, 'error');
+                return _context10.abrupt("return");
+
+              case 20:
+              case "end":
+                return _context10.stop();
+            }
+          }
+        }, _callee10, null, [[0, 12]]);
       }))();
     }
   },
   created: function created() {
-    var _this7 = this;
+    var _this11 = this;
 
-    return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee7() {
+    return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee11() {
       var userSecret, user;
-      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee7$(_context7) {
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee11$(_context11) {
         while (1) {
-          switch (_context7.prev = _context7.next) {
+          switch (_context11.prev = _context11.next) {
             case 0:
-              _context7.prev = 0;
+              _context11.prev = 0;
               userSecret = localStorage.getItem('access-token');
-              _this7.accessToken = userSecret; // check if the user access token is set.....
+              _this11.accessToken = userSecret; // check if the user access token is set.....
 
               if (!(userSecret.trim() !== '')) {
-                _context7.next = 11;
+                _context11.next = 11;
                 break;
               }
 
-              _context7.next = 6;
-              return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get(_this7.$baseUrl + 'user', {
+              _context11.next = 6;
+              return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get(_this11.$baseUrl + 'user', {
                 headers: {
                   Accept: 'application/json',
                   'Authorization': 'Bearer ' + userSecret,
@@ -2417,56 +2723,56 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               });
 
             case 6:
-              user = _context7.sent;
+              user = _context11.sent;
 
               if (!(user.status != 200)) {
-                _context7.next = 11;
+                _context11.next = 11;
                 break;
               }
 
               sweetalert__WEBPACK_IMPORTED_MODULE_2___default()('Unauthorized Access', 'Sorry, You Do Not Have Enough Priviledge To Access This Page.', 'error');
               setTimeout(function () {
-                _this7.$router.push({
+                _this11.$router.push({
                   name: 'Welcome'
                 });
               }, 1000);
-              return _context7.abrupt("return");
+              return _context11.abrupt("return");
 
             case 11:
               if (!(userSecret.trim() == '')) {
-                _context7.next = 15;
+                _context11.next = 15;
                 break;
               }
 
               sweetalert__WEBPACK_IMPORTED_MODULE_2___default()('Unauthorized Access', 'Sorry, You Do Not Have Enough Priviledge To Access This Page.', 'error');
               setTimeout(function () {
-                _this7.$router.push({
+                _this11.$router.push({
                   name: 'Welcome'
                 });
               }, 1000);
-              return _context7.abrupt("return");
+              return _context11.abrupt("return");
 
             case 15:
-              _context7.next = 22;
+              _context11.next = 22;
               break;
 
             case 17:
-              _context7.prev = 17;
-              _context7.t0 = _context7["catch"](0);
+              _context11.prev = 17;
+              _context11.t0 = _context11["catch"](0);
               sweetalert__WEBPACK_IMPORTED_MODULE_2___default()('Unauthorized Access', 'Sorry, You Do Not Have Enough Priviledge To Access This Page.', 'error');
               setTimeout(function () {
-                _this7.$router.push({
+                _this11.$router.push({
                   name: 'Welcome'
                 });
               }, 1000);
-              return _context7.abrupt("return");
+              return _context11.abrupt("return");
 
             case 22:
             case "end":
-              return _context7.stop();
+              return _context11.stop();
           }
         }
-      }, _callee7, null, [[0, 17]]);
+      }, _callee11, null, [[0, 17]]);
     }))();
   }
 });
@@ -2972,7 +3278,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.form-control[data-v-01ab55f4] {\n  width: 100% !important;\n}\n.forums-column[data-v-01ab55f4] {\n  padding-right: 100px;\n  border-right: 1px solid grey;\n}\n.forum-editor[data-v-01ab55f4], .forums[data-v-01ab55f4] {\n  padding: 10px 10px;\n}\n.app_description[data-v-01ab55f4] {\n  margin-left: -1%;\n}\n.btn-div[data-v-01ab55f4] {\n  margin-top: 15px;\n}\n.forums[data-v-01ab55f4] {\n  border-radius: 4px;\n  margin: 20px 0;\n}\n.card[data-v-01ab55f4] {\n  cursor: pointer;\n}\nul[data-v-01ab55f4] {\n  list-style: none;\n  display: inline-flex;\n}\nul li[data-v-01ab55f4] {\n  margin: 0 5px !important;\n}\n.activity[data-v-01ab55f4] {\n  padding: 5px 5px !important;\n}\n.material-icons[data-v-01ab55f4] {\n  vertical-align: middle;\n}\na[data-v-01ab55f4] {\n  text-decoration: none;\n}\n.activity:nth-of-type(1) a[data-v-01ab55f4] {\n  color: red;\n  font-weight: 600;\n}\n", ""]);
+exports.push([module.i, "\n.form-control[data-v-01ab55f4] {\n  width: 100% !important;\n}\n.forums-column[data-v-01ab55f4] {\n  padding-right: 100px;\n  border-right: 1px solid grey;\n}\n.forum-editor[data-v-01ab55f4], .forums[data-v-01ab55f4] {\n  padding: 10px 10px;\n}\n.app_description[data-v-01ab55f4] {\n  margin-left: -1%;\n}\n.btn-div[data-v-01ab55f4] {\n  margin-top: 15px;\n}\n.forums[data-v-01ab55f4] {\n  border-radius: 4px;\n  margin: 20px 0;\n}\n.card[data-v-01ab55f4] {\n  cursor: pointer;\n}\nul[data-v-01ab55f4] {\n  list-style: none;\n  display: inline-flex;\n}\nul li[data-v-01ab55f4] {\n  margin: 0 5px !important;\n}\n.activity[data-v-01ab55f4] {\n  padding: 5px 5px !important;\n}\n.material-icons[data-v-01ab55f4] {\n  vertical-align: middle;\n}\na[data-v-01ab55f4] {\n  text-decoration: none;\n}\n.activity:nth-of-type(1) a[data-v-01ab55f4],\n.activity:nth-of-type(4) a[data-v-01ab55f4] {\n  color: red;\n  font-weight: 600;\n}\n", ""]);
 
 // exports
 
@@ -4942,15 +5248,140 @@ var render = function() {
             "div",
             { staticClass: "six columns forums-column" },
             [
-              _vm._m(0),
+              _vm.type !== "comments"
+                ? [
+                    _vm._m(0),
+                    _vm._v(" "),
+                    _c("p", [
+                      _vm._v("The Most Recent Topics For You To Talk About...")
+                    ]),
+                    _vm._v(" "),
+                    _c("hr")
+                  ]
+                : _vm._e(),
               _vm._v(" "),
-              _c("p", [
-                _vm._v("The Most Recent Topics For You To Talk About...")
-              ]),
+              _vm.type == "comments"
+                ? [
+                    _c("div", { staticClass: "card" }, [
+                      _c("div", { staticClass: "card-body" }, [
+                        _c("h5", { staticClass: "card-title" }, [
+                          _c("b", [_vm._v(_vm._s(_vm.forum.title))])
+                        ]),
+                        _vm._v(" "),
+                        _c(
+                          "h6",
+                          { staticClass: "card-subtitle mb-2 text-muted" },
+                          [
+                            _c("b", [
+                              _vm._v(
+                                "Author: " +
+                                  _vm._s(_vm.forum.user.name) +
+                                  ", Created " +
+                                  _vm._s(_vm.forum.timestamp)
+                              )
+                            ])
+                          ]
+                        ),
+                        _vm._v(" "),
+                        _c("hr"),
+                        _vm._v(" "),
+                        _c("p", {
+                          staticClass: "card-text",
+                          domProps: { innerHTML: _vm._s(_vm.forum.content) }
+                        }),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "card-footer" }, [
+                          _c("ul", [
+                            _c(
+                              "li",
+                              {
+                                staticClass: "activity forums",
+                                on: {
+                                  click: function($event) {
+                                    $event.preventDefault()
+                                    return _vm.like(_vm.forum.id)
+                                  }
+                                }
+                              },
+                              [
+                                _c(
+                                  "a",
+                                  {
+                                    staticClass: "card-link",
+                                    attrs: { href: "#" }
+                                  },
+                                  [
+                                    _c("i", { staticClass: "material-icons" }, [
+                                      _vm._v("favorite")
+                                    ]),
+                                    _vm._v(" " + _vm._s(_vm.forum.likes))
+                                  ]
+                                )
+                              ]
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "li",
+                              {
+                                staticClass: "activity forums",
+                                on: {
+                                  click: function($event) {
+                                    $event.preventDefault()
+                                    return _vm.editForum(_vm.forum)
+                                  }
+                                }
+                              },
+                              [_vm._m(1)]
+                            )
+                          ])
+                        ])
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c("h3", [
+                      _c("i", { staticClass: "material-icons medium" }, [
+                        _vm._v("sms")
+                      ]),
+                      _vm._v(" Comments " + _vm._s(_vm.forum.comments))
+                    ]),
+                    _vm._v(" "),
+                    _c("hr"),
+                    _vm._v(" "),
+                    _vm.comments.length > 0
+                      ? _c(
+                          "div",
+                          _vm._l(_vm.comments, function(postComment) {
+                            return _c(
+                              "div",
+                              { key: postComment.id, staticClass: "card" },
+                              [
+                                _c("div", { staticClass: "card-body" }, [
+                                  _c("p", [
+                                    _c("b", [
+                                      _vm._v(
+                                        _vm._s(postComment.user.name) +
+                                          " Created " +
+                                          _vm._s(postComment.humanTime)
+                                      )
+                                    ])
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("p", {
+                                    domProps: {
+                                      innerHTML: _vm._s(postComment.comment)
+                                    }
+                                  })
+                                ])
+                              ]
+                            )
+                          }),
+                          0
+                        )
+                      : _vm._e()
+                  ]
+                : _vm._e(),
               _vm._v(" "),
-              _c("hr"),
-              _vm._v(" "),
-              _vm.forums.length > 0
+              _vm.forums.length > 0 && _vm.type !== "comments"
                 ? _vm._l(_vm.forums, function(singleForum) {
                     return _c(
                       "div",
@@ -5022,23 +5453,41 @@ var render = function() {
                                   ]
                                 ),
                                 _vm._v(" "),
-                                _c("li", { staticClass: "activity forums" }, [
-                                  _c(
-                                    "a",
-                                    {
-                                      staticClass: "card-link",
-                                      attrs: { href: "#" }
-                                    },
-                                    [
-                                      _c(
-                                        "i",
-                                        { staticClass: "material-icons" },
-                                        [_vm._v("sms")]
-                                      ),
-                                      _vm._v(" " + _vm._s(singleForum.comments))
-                                    ]
-                                  )
-                                ]),
+                                parseInt(singleForum.user.id) == _vm.user_id
+                                  ? _c(
+                                      "li",
+                                      {
+                                        staticClass: "activity forums",
+                                        on: {
+                                          click: function($event) {
+                                            $event.preventDefault()
+                                            return _vm.fetchAndAddComments(
+                                              singleForum
+                                            )
+                                          }
+                                        }
+                                      },
+                                      [
+                                        _c(
+                                          "a",
+                                          {
+                                            staticClass: "card-link",
+                                            attrs: { href: "#" }
+                                          },
+                                          [
+                                            _c(
+                                              "i",
+                                              { staticClass: "material-icons" },
+                                              [_vm._v("sms")]
+                                            ),
+                                            _vm._v(
+                                              " " + _vm._s(singleForum.comments)
+                                            )
+                                          ]
+                                        )
+                                      ]
+                                    )
+                                  : _vm._e(),
                                 _vm._v(" "),
                                 _c(
                                   "li",
@@ -5051,8 +5500,26 @@ var render = function() {
                                       }
                                     }
                                   },
-                                  [_vm._m(1, true)]
-                                )
+                                  [_vm._m(2, true)]
+                                ),
+                                _vm._v(" "),
+                                singleForum.user.id == _vm.user_id
+                                  ? _c(
+                                      "li",
+                                      {
+                                        staticClass: "activity forums",
+                                        on: {
+                                          click: function($event) {
+                                            $event.preventDefault()
+                                            return _vm.deleteForum(
+                                              singleForum.id
+                                            )
+                                          }
+                                        }
+                                      },
+                                      [_vm._m(3, true)]
+                                    )
+                                  : _vm._e()
                               ])
                             ])
                           ])
@@ -5080,6 +5547,14 @@ var render = function() {
                     _vm._v(" "),
                     _c("b", [_vm._v("Update " + _vm._s(_vm.forum.title))]),
                     _vm._v("...")
+                  ])
+                : _vm._e(),
+              _vm._v(" "),
+              _vm.type === "comments"
+                ? _c("h5", [
+                    _c("i", { staticClass: "material-icons" }, [_vm._v("sms")]),
+                    _vm._v(" "),
+                    _c("b", [_vm._v(" Add A Comment.")])
                   ])
                 : _vm._e(),
               _vm._v(" "),
@@ -5178,7 +5653,7 @@ var render = function() {
                         )
                       ]),
                       _vm._v(" "),
-                      _vm._m(2)
+                      _vm._m(4)
                     ]
                   )
                 : _vm._e(),
@@ -5276,7 +5751,59 @@ var render = function() {
                         )
                       ]),
                       _vm._v(" "),
-                      _vm._m(3)
+                      _vm._m(5)
+                    ]
+                  )
+                : _vm._e(),
+              _vm._v(" "),
+              _vm.type === "comments"
+                ? _c(
+                    "form",
+                    {
+                      attrs: { method: "post" },
+                      on: {
+                        submit: function($event) {
+                          $event.preventDefault()
+                          return _vm.addComment()
+                        }
+                      }
+                    },
+                    [
+                      _c("div", { staticClass: "form-group" }, [
+                        _c(
+                          "label",
+                          {
+                            staticClass:
+                              "col-md-4 col-form-label text-md-right",
+                            attrs: { for: "forum-content" }
+                          },
+                          [_vm._v("Your Comment")]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "div",
+                          { staticClass: "col-md-6" },
+                          [
+                            _c("ckeditor", {
+                              attrs: {
+                                required: "",
+                                placeholder: "Enter A Comment...",
+                                config: _vm.editorConfig
+                              },
+                              model: {
+                                value: _vm.comment,
+                                callback: function($$v) {
+                                  _vm.comment = $$v
+                                },
+                                expression: "comment"
+                              }
+                            })
+                          ],
+                          1
+                        )
+                      ]),
+                      _vm._v(" "),
+                      _vm._m(6)
                     ]
                   )
                 : _vm._e()
@@ -5310,6 +5837,23 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
+    return _c("a", { staticClass: "card-link", attrs: { href: "#" } }, [
+      _c("i", { staticClass: "material-icons" }, [_vm._v("edit")]),
+      _vm._v(" Edit")
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("a", { staticClass: "card-link", attrs: { href: "#" } }, [
+      _c("i", { staticClass: "material-icons" }, [_vm._v("close")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
     return _c("div", { staticClass: "form-group btn-div mb-0" }, [
       _c("div", { staticClass: "col-md-8 offset-md-4" }, [
         _c(
@@ -5330,6 +5874,20 @@ var staticRenderFns = [
           "button",
           { staticClass: "btn btn-primary", attrs: { type: "submit" } },
           [_vm._v("\n                    Update Topic\n                  ")]
+        )
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "form-group btn-div mb-0" }, [
+      _c("div", { staticClass: "col-md-8 offset-md-4" }, [
+        _c(
+          "button",
+          { staticClass: "btn btn-primary", attrs: { type: "submit" } },
+          [_vm._v("\n                    Comment\n                  ")]
         )
       ])
     ])
@@ -21368,7 +21926,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _views_Welcome__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../views/Welcome */ "./resources/js/views/Welcome.vue");
-/* harmony import */ var _views_Dashboard__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../views/Dashboard */ "./resources/js/views/Dashboard.vue");
+/* harmony import */ var _views_Dashboard__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../views/Dashboard */ "./resources/js/views/Dashboard.vue");
 
 
 /* harmony default export */ __webpack_exports__["default"] = ([{
@@ -21380,7 +21938,7 @@ __webpack_require__.r(__webpack_exports__);
   path: '/home',
   alias: '/dashboard',
   name: 'Dashboard',
-  component: _views_Dashboard__WEBPACK_IMPORTED_MODULE_2__["default"]
+  component: _views_Dashboard__WEBPACK_IMPORTED_MODULE_1__["default"]
 }]);
 
 /***/ }),

@@ -23,6 +23,7 @@ class ForumsController extends Controller
       $Response['status'] = 200;
       $Response['message'] = 'Successfully Fetched ' . count($forums) . ' records.';
       $Response['data'] = $forums;
+      $Response['errors'] = [];
 
       return response()->json($Response, 200);
     }
@@ -103,10 +104,11 @@ class ForumsController extends Controller
 
       // send back some data...
       $Response['data'] = $forum;
+      $Response['data']['user'] = $forum->user;
       $Response['status'] = 200;
       $Response['errors'] = '';
+      $Response['timestamp'] = $forum->created_at->diffForHumans();
       $Response['message'] = 'Successfully Retrieved ' . $forum->title;
-      $Response['comments'] = $forum->commentModel;
 
       return response()->json($Response, 200);
     } catch (Exception $e) {
@@ -184,7 +186,11 @@ class ForumsController extends Controller
       $comments = $forum->commentModel;
 
       // delete all the comments first... #Delete the forum next...
-      $comments->delete();
+      if (count($comments) > 0) {
+        foreach ($comments as $comment) {
+          $comment->delete();
+        }
+      }
       $forum->delete();
 
       // send back some data...

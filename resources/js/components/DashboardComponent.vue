@@ -7,10 +7,40 @@
       <div class="container">
         <div class="row">
           <div class="six columns forums-column">
-            <h5><i class="material-icons">sms</i> Topics</h5>
-            <p>The Most Recent Topics For You To Talk About...</p>
-            <hr>
-            <template v-if="forums.length > 0">
+            <template v-if="type !== 'comments'">
+              <h5><i class="material-icons">sms</i> Topics</h5>
+              <p>The Most Recent Topics For You To Talk About...</p>
+              <hr>
+            </template>
+            <template v-if="type == 'comments'">
+              <!-- Add The Post Meta Here!! -->
+              <div class="card">
+                <div class="card-body">
+                <h5 class="card-title"><b>{{ forum.title }}</b></h5>
+                <h6 class="card-subtitle mb-2 text-muted"><b>Author: {{ forum.user.name }}, Created {{ forum.timestamp }}</b></h6>
+                <hr>
+                <p class="card-text" v-html="forum.content"></p>
+                <div class="card-footer">
+                  <ul>
+                    <li class="activity forums" @click.prevent="like(forum.id)"><a href="#" class="card-link"><i class="material-icons">favorite</i> {{ forum.likes }}</a></li>
+                    <li class="activity forums" @click.prevent="editForum(forum)"><a href="#" class="card-link"><i class="material-icons">edit</i> Edit</a></li>
+                  </ul>
+                </div>
+              </div>
+              </div>
+              <h3><i class="material-icons medium">sms</i> Comments {{ forum.comments }}</h3>
+              <hr>
+              <!-- Add The Comments Here... -->
+              <div v-if="comments.length > 0">
+                <div class="card" v-for="postComment in comments" :key="postComment.id">
+                  <div class="card-body">
+                    <p><b>{{ postComment.user.name }} Created {{ postComment.humanTime }}</b></p>
+                    <p v-html="postComment.comment"></p>
+                  </div>
+                </div>
+              </div>
+            </template>
+            <template v-if="forums.length > 0 && type !== 'comments'">
               <div class="forums" v-for="singleForum in forums" :key="singleForum.id">
                 <div class="card">
                   <div class="card-body">
@@ -21,8 +51,9 @@
                     <div class="card-footer">
                       <ul>
                         <li class="activity forums" @click.prevent="like(singleForum.id)"><a href="#" class="card-link"><i class="material-icons">favorite</i> {{ singleForum.likes }}</a></li>
-                        <li class="activity forums"><a href="#" class="card-link"><i class="material-icons">sms</i> {{ singleForum.comments }}</a></li>
+                        <li v-if="parseInt(singleForum.user.id) == user_id" @click.prevent="fetchAndAddComments(singleForum)" class="activity forums"><a href="#" class="card-link"><i class="material-icons">sms</i> {{ singleForum.comments }}</a></li>
                         <li class="activity forums" @click.prevent="editForum(singleForum)"><a href="#" class="card-link"><i class="material-icons">edit</i> Edit</a></li>
+                        <li v-if="singleForum.user.id == user_id" class="activity forums" @click.prevent="deleteForum(singleForum.id)"><a href="#" class="card-link"><i class="material-icons">close</i></a></li>
                       </ul>
                     </div>
                   </div>
@@ -34,6 +65,7 @@
             <div class="forum-editor">
               <h5 v-if="type === 'create'"><i class="material-icons">sms</i> Create A Topic...</h5>
               <h5 v-if="type === 'edit'"><i class="material-icons">sms</i> <b>Update {{ forum.title }}</b>...</h5>
+              <h5 v-if="type === 'comments'"><i class="material-icons">sms</i> <b> Add A Comment.</b></h5>
               <hr>
               <form v-if="type === 'create'" method="post" @submit.prevent="createForum()">
                 <div class="form-group">
@@ -77,6 +109,21 @@
                   </div>
                 </div>
               </form>
+              <form v-if="type === 'comments'" @submit.prevent="addComment()" method="post" >
+                <div class="form-group">
+                  <label for="forum-content" class="col-md-4 col-form-label text-md-right">Your Comment</label>
+                  <div class="col-md-6">
+                     <ckeditor v-model="comment" required placeholder="Enter A Comment..." :config="editorConfig"></ckeditor>
+                  </div>
+                </div>
+                <div class="form-group btn-div mb-0">
+                  <div class="col-md-8 offset-md-4">
+                    <button type="submit" class="btn btn-primary">
+                      Comment
+                    </button>
+                  </div>
+                </div>
+              </form>
             </div>
           </div>
         </div>
@@ -97,11 +144,17 @@
         editorConfig: {},
         forum: {
           id: null,
+          user: {},
           title: '',
-          content: ''
+          content: '',
+          likes: 0,
+          comments: 0,
+          timestamp: ''
         },
         type: 'create',
         forums: [],
+        comment: '',
+        user_id: '',
         comments: [],
         accessToken: '',
       }
@@ -111,6 +164,7 @@
     },
     async mounted() {
       await this.fetchForums();
+      this.user_id = parseInt(localStorage.getItem('user-id'));
     },
     filters: {
       truncate(value) {
@@ -246,12 +300,114 @@
           return;
         }
       },
+      async fetchAndAddComments(forumComment) {
+        try {
+          let forumAndComment = await axios.get(this.$baseUrl + 'forum/comments/' + forumComment.id, {
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + this.accessToken,
+              'Cache-Control': 'no-cache'
+            }
+          });
+
+          if (forumAndComment.status == 200) {
+            this.type = 'comments';
+
+            this.forum.id = forumAndComment.data.data.id;
+            this.forum.title = forumAndComment.data.data.title;
+            this.forum.content = forumAndComment.data.data.content;
+            this.forum.likes = forumAndComment.data.data.likes;
+            this.forum.comments = forumAndComment.data.data.comments;
+            this.forum.timestamp = forumAndComment.data.timestamp;
+            this.forum.user = forumAndComment.data.data.user;
+
+            await this.fetchComments(forumComment.id);
+            return;
+          }
+        } catch (e) {
+          this.type = 'create';
+
+          this.forum.id = '';
+          this.forum.title = '';
+          this.forum.content = '';
+          this.forum.likes = '';
+          this.forum.comments = '';
+          this.forum.timestamp = '';
+
+          return;
+        }
+      },
+      async fetchComments(forumId) {
+        try {
+          let comments = await axios.get(this.$baseUrl + 'comments/' + forumId, {
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + this.accessToken,
+              'Cache-Control': 'no-cache'
+            }
+          });
+
+          if (comments.status == 200) {
+            this.comments = comments.data.comments;
+            return;
+          }
+
+          this.comments = [];
+          return;
+        } catch (e) {
+          console.log(e);
+          this.comments = [];
+          return;
+        }
+      },
       async editForum(forumToUpdate) {
         this.type = 'edit';
 
         this.forum.id = forumToUpdate.id;
         this.forum.title = forumToUpdate.title;
         this.forum.content = forumToUpdate.content;
+      },
+      async addComment() {
+        try {
+          let comment = await axios.post(this.$baseUrl + 'comment/' + this.forum.id, {
+            comment: this.comment
+          }, {
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + this.accessToken,
+              'Cache-Control': 'no-cache'
+            }
+          });
+
+          if (comment.status == 201) {
+            swal('Success', 'Your Comment Has Been Saved Successfully.', 'success');
+            this.comments.unshift(comment.data.data);
+
+            this.forum.comments += 1;
+            return;
+          }
+
+          swal('Operation Failed', 'Oops, An Unexpected Error Occurred And Your Comment Could Not Be Saved.', 'error');
+          return;
+        } catch (e) {
+          let errorData = e.response.data;
+          if (errorData.status == 400) {
+            for (const error in errorData.errors) {
+              swal(
+                `${error} Error: `,
+                errorData.errors[error][0],
+                'error'
+              );
+            }
+            return;
+          }
+
+          swal('Operation Failed', errorData.message, 'error');
+          return;
+        }
       },
       async like(forumId) {
         try {
@@ -278,8 +434,45 @@
             return;
           }
         } catch (e) {
-          console.log(e);
           this.forums = [];
+          return;
+        }
+      },
+      async deleteForum(forumId) {
+        try {
+          let deletedForum = await axios.delete(this.$baseUrl + 'forum/delete/' + forumId, {
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + this.accessToken,
+              'Cache-Control': 'no-cache'
+            }
+          });
+
+          if (deletedForum.status == 200) {
+            swal('success', 'The Selected Forum Has Been Deleted Successfully!', 'success');
+            this.forums = this.forums.filter((el) => {
+              if (el.id == forumId) return false;
+            })
+            return;
+          }
+
+          swal('Operation Failed', 'The Selected Forum Could Not Be Deleted Successfully. Please, Try Again Later!', 'error');
+          return;
+        } catch (e) {
+          let errorData = e.response.data;
+          if (errorData.status == 400) {
+            for (const error in errorData.errors) {
+              swal(
+                `${error} Error: `,
+                errorData.errors[error][0],
+                'error'
+              );
+            }
+            return;
+          }
+
+          swal('Operation Failed', errorData.message, 'error');
           return;
         }
       }
@@ -374,7 +567,8 @@ ul li {
 a {
   text-decoration: none;
 }
-.activity:nth-of-type(1) a {
+.activity:nth-of-type(1) a,
+.activity:nth-of-type(4) a {
   color: red;
   font-weight: 600;
 }

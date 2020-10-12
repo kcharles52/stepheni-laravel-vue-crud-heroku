@@ -21,13 +21,19 @@ Route::get('/v1/logout', 'Auth\LoginController@logout');
 // Registration Routes...
 Route::post('/v1/register', 'Auth\RegisterController@create');
 
-
 // Forum Routes....
 Route::middleware('auth:api')->post('/v1/forum/create', 'ForumsController@create');
 Route::middleware('auth:api')->post('/v1/forum/update/{forumId}', 'ForumsController@update');
 Route::middleware('auth:api')->get('/v1/forum', 'ForumsController@fetchForums');
 Route::middleware('auth:api')->get('/v1/forum/like/{forumId}', 'ForumsController@like');
+Route::middleware('auth:api')->get('/v1/forum/comments/{forumId}', 'ForumsController@read');
+Route::middleware('auth:api')->delete('/v1/forum/delete/{forumId}', 'ForumsController@delete');
 
+// Comment Routes....
+Route::middleware('auth:api')->post('/v1/comment/{forumId}', 'CommentsController@create');
+Route::middleware('auth:api')->get('/v1/comments/{forumId}', 'CommentsController@fetchComments');
+
+// Token Verification || Confirmation...
 Route::middleware('auth:api')->get('/v1/user', function (Request $request) {
     return $request->user();
 });
