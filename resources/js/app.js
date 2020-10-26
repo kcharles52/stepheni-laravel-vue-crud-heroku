@@ -28,7 +28,9 @@ const Router = new VueRouter({
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 Vue.component('App', require('./App.vue').default);
-Vue.prototype.$baseUrl = 'http://localhost:8000/api/v1/';
+// Vue.prototype.$baseUrl = 'http://localhost:8000/api/v1/';
+
+Vue.prototype.$baseUrl = 'https://glacial-woodland-75031.herokuapp.com/api/v1/';
 
 // Application Core...
 const app = new Vue({
