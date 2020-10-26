@@ -347,4 +347,14 @@ The next thing we have to do is to test our code locally. This is to ensure that
 
 4. `php artisan serve`
 
-If everything works fine, Open up your browser and navigate to `http://127.0.0.1:8000`. The application then will now boot and render our page. You can create a few account to test and also create some forums and some comments as well.
+If everything works fine, Open up your browser and navigate to `http://127.0.0.1:8000`. The application then will now boot and render our page. You can create a few account to test and also create some forums and some comments as well. This is the view of the finished application on my system.
+
+Meanwhile, you can get the complete development code for this tutorial from [Github](https://github.com/learningdollars/stepheni-laravel-vue-crud-heroku/tree/main).
+
+![Ld Fullstack Image](https://res.cloudinary.com/dw0donhwr/image/upload/v1603711663/Screenshot_from_2020-10-26_11-40-34_kxjegk.png)
+
+![Ld Fullstack Image II](https://res.cloudinary.com/dw0donhwr/image/upload/v1603711636/Screenshot_from_2020-10-26_12-01-14_jwtkud.png)
+
+### **Deploying To Heroku**
+
+The final step in this lesson is to deploy our code to a live server. We will be using heroku and I assume you already have an heroku account.
